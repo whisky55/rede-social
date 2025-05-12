@@ -1,52 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { PrimaryButton } from '../components/Button';
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { auth } from "../firebase";
+import { useState, useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const docRef = doc(db, 'users', user.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          } else {
-            Alert.alert('Erro', 'Documento do usuário não encontrado.');
-          }
-        }
-      } catch (error) {
-        Alert.alert('Erro', 'Ocorreu um erro ao buscar os dados.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
   }, []);
 
-  const logout = async () => {
-    try {
-      await auth.signOut();
-     
-    } catch (error) {
-      Alert.alert('Erro', 'Erro ao sair da conta.');
-    }
-  };
-
-  if (loading) {
+  if (!user) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="blue" />
+      <View style={styles.container}>
+        <Text style={styles.title}>Usuário não autenticado</Text>
       </View>
     );
   }
@@ -55,41 +27,64 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Minha Conta</Text>
 
-      <Text style={styles.label}>Nome:</Text>
-      <Text style={styles.info}>{userData?.name || '---'}</Text>
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>E-mail:</Text>
+        <Text style={styles.value}>{user.email}</Text>
 
-      <Text style={styles.label}>Telefone:</Text>
-      <Text style={styles.info}>{userData?.phone || '---'}</Text>
+        <Text style={styles.label}>UID:</Text>
+        <Text style={styles.value}>{user.uid}</Text>
 
-      <Text style={styles.label}>E-mail:</Text>
-      <Text style={styles.info}>{userData?.email || '---'}</Text>
+        {user.displayName ? (
+          <>
+            <Text style={styles.label}>Nome:</Text>
+            <Text style={styles.value}>{user.displayName}</Text>
+          </>
+        ) : null}
+      </View>
 
-      <PrimaryButton text="Sair da conta" action={logout} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.buttonText}>Voltar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    margin: 25,
-  },
-  loadingContainer: {
+    margin: 20,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
   },
   title: {
-    fontSize: 32,
-    textAlign: 'center',
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: 30,
+    textAlign: "center",
+  },
+  infoContainer: {
+    marginBottom: 30,
+    backgroundColor: "#f0f0f0",
+    padding: 20,
+    borderRadius: 10,
   },
   label: {
-    fontWeight: 'bold',
-    fontSize: 18,
+    fontWeight: "bold",
     marginTop: 10,
   },
-  info: {
-    fontSize: 18,
+  value: {
     marginBottom: 10,
+  },
+  button: {
+    backgroundColor: "#007bff",
+    padding: 15,
+    borderRadius: 10,
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
