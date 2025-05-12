@@ -61,7 +61,7 @@ export default function LoginScreen () {
     return (
         <SafeAreaView>
             <View style={styles.container}>
-                <Text style={styles.title}>Entrar</Text>
+                <Text style={styles.title}>Bem Vindo!</Text>
                 <EmailInput value={email} setValue={setEmail}/>
 
                 <PasswordInput value={password} setValue={setPassword} />
