@@ -1,62 +1,72 @@
-
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
-export function PrimaryButton ({ action, text }) {
+export function PrimaryButton({ action, text }) {
     return (
         <TouchableOpacity
             onPress={action}
             style={[styles.button, styles.primaryButton]}
         >
-            <Text style={styles.buttonText} >{text}</Text>
+            <Text style={styles.primaryText}>{text}</Text>
         </TouchableOpacity>
-    )
+    );
 }
 
-export function SecondaryButton ({ action, text }) {
+export function SecondaryButton({ action, text }) {
     return (
         <TouchableOpacity
             onPress={action}
             style={[styles.button, styles.secondaryButton]}
         >
-            <Text style={[styles.buttonText, styles.secondaryButtonText]} >{text}</Text>
+            <Text style={styles.secondaryText}>{text}</Text>
         </TouchableOpacity>
-    )
+    );
 }
 
-export function DangerButton ({ action, text }) {
+export function DangerButton({ action, text }) {
     return (
         <TouchableOpacity
             onPress={action}
             style={[styles.button, styles.dangerButton]}
         >
-            <Text style={[styles.buttonText]} >{text}</Text>
+            <Text style={styles.dangerText}>{text}</Text>
         </TouchableOpacity>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     button: {
-        padding: 15,
-        borderRadius: 15,
-        marginVertical: 15
+        paddingVertical: 14,
+        borderRadius: 12,
+        marginVertical: 12,
+        alignItems: 'center',
     },
-    buttonText: {
-        color: 'white',
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: 'bold'
-    },
+    // Botão primário
     primaryButton: {
-        backgroundColor: '#27428f',
+        backgroundColor: '#4F46E5',
     },
+    primaryText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    // Botão secundário
     secondaryButton: {
-        borderColor: '#27428f',
-        borderWidth: 2
+        backgroundColor: '#E0E7FF',
+        borderWidth: 2,
+        borderColor: '#4F46E5',
     },
-    secondaryButtonText: {
-        color: '#27428f',
+    secondaryText: {
+        color: '#4F46E5',
+        fontSize: 16,
+        fontWeight: '500',
     },
+    // Botão de perigo
     dangerButton: {
-        backgroundColor: 'red'
-    }
-})
+        backgroundColor: '#EF4444',
+    },
+    dangerText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+});

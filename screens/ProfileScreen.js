@@ -28,15 +28,15 @@ export default function ProfileScreen() {
       <Text style={styles.title}>Minha Conta</Text>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>E-mail:</Text>
+        <Text style={styles.label}>E-mail</Text>
         <Text style={styles.value}>{user.email}</Text>
 
-        <Text style={styles.label}>UID:</Text>
+        <Text style={styles.label}>UID</Text>
         <Text style={styles.value}>{user.uid}</Text>
 
         {user.displayName ? (
           <>
-            <Text style={styles.label}>Nome:</Text>
+            <Text style={styles.label}>Nome</Text>
             <Text style={styles.value}>{user.displayName}</Text>
           </>
         ) : null}
@@ -54,37 +54,50 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
     flex: 1,
-    justifyContent: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+    backgroundColor: '#F9FAFB',
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 30,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: '#1F2937', // Gray-800
     marginBottom: 30,
-    textAlign: "center",
   },
   infoContainer: {
-    marginBottom: 30,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#FFFFFF',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   label: {
-    fontWeight: "bold",
-    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4B5563', // Gray-700
+    marginTop: 12,
   },
   value: {
-    marginBottom: 10,
+    fontSize: 16,
+    color: '#111827', // Gray-900
+    marginBottom: 8,
   },
   button: {
-    backgroundColor: "#007bff",
-    padding: 15,
+    marginTop: 40,
+    backgroundColor: '#4F46E5', // Indigo
+    paddingVertical: 14,
+    paddingHorizontal: 32,
     borderRadius: 10,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
