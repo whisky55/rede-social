@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,40 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { doc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebaseConfig';
-import * as FileSystem from 'expo-file-system';
 
 const { width } = Dimensions.get('window');
 
 export default function PostCard({ post, currentUserId, onUserPress }) {
   const [isLiked, setIsLiked] = useState(post.likes?.includes(currentUserId) || false);
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+
+  // Gerar imageId automaticamente se não existir
+  useEffect(() => {
+    const addImageIdIfMissing = async () => {
+      if (post.imageBase64 && !post.imageId) {
+        try {
+          const imageId = `img_${post.id}_${Date.now()}`;
+          const postRef = doc(db, 'posts', post.id);
+          await updateDoc(postRef, {
+            imageId: imageId
+          });
+          console.log('ImageId adicionado:', imageId);
+        } catch (error) {
+          // console.error('Erro ao adicionar imageId:', error);
+        }
+      }
+    };
+
+    addImageIdIfMissing();
+  }, [post.id, post.imageBase64, post.imageId]);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return '';
@@ -69,14 +91,6 @@ export default function PostCard({ post, currentUserId, onUserPress }) {
 
   const deletePost = async () => {
     try {
-      // Deletar imagem do armazenamento local se existir
-      if (post.imageUri) {
-        const fileExists = await FileSystem.getInfoAsync(post.imageUri);
-        if (fileExists.exists) {
-          await FileSystem.deleteAsync(post.imageUri);
-        }
-      }
-
       // Deletar post do Firestore
       await deleteDoc(doc(db, 'posts', post.id));
       Alert.alert('Sucesso', 'Post excluído com sucesso!');
@@ -85,6 +99,25 @@ export default function PostCard({ post, currentUserId, onUserPress }) {
       Alert.alert('Erro', 'Não foi possível excluir o post');
     }
   };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+    console.error('Erro ao carregar imagem do post:', post.id);
+  };
+
+  // Verificar se há imagem para mostrar (base64 ou URI)
+  const hasImage = post.imageBase64 || post.imageUri;
+  const imageSource = post.imageBase64 
+    ? { uri: post.imageBase64 }
+    : post.imageUri 
+    ? { uri: post.imageUri }
+    : null;
 
   return (
     <View style={styles.container}>
@@ -116,8 +149,30 @@ export default function PostCard({ post, currentUserId, onUserPress }) {
       </View>
 
       {/* Imagem do Post */}
-      {post.imageUri && (
-        <Image source={{ uri: post.imageUri }} style={styles.postImage} />
+      {hasImage && imageSource && (
+        <View style={styles.imageContainer}>
+          {imageLoading && (
+            <View style={styles.imageLoader}>
+              <ActivityIndicator size="large" color="#007AFF" />
+              <Text style={styles.loadingText}>Carregando imagem...</Text>
+            </View>
+          )}
+          
+          {!imageError ? (
+            <Image 
+              source={imageSource}
+              style={[styles.postImage, imageLoading && { opacity: 0 }]}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.imageError}>
+              <Ionicons name="image-outline" size={50} color="#ccc" />
+              <Text style={styles.errorText}>Erro ao carregar imagem</Text>
+            </View>
+          )}
+        </View>
       )}
 
       {/* Descrição */}
@@ -130,6 +185,17 @@ export default function PostCard({ post, currentUserId, onUserPress }) {
         <View style={styles.locationContainer}>
           <Ionicons name="location-outline" size={16} color="#666" />
           <Text style={styles.locationText}>{post.location}</Text>
+        </View>
+      )}
+
+      {/* Debug Info (remover em produção) */}
+      {__DEV__ && (
+        <View style={styles.debugInfo}>
+          <Text style={styles.debugText}>
+            Debug: {post.imageId ? `ID: ${post.imageId}` : 'Sem imageId'} | 
+            {post.imageBase64 ? ' Base64: ✓' : ' Base64: ✗'} | 
+            {post.imageUri ? ' URI: ✓' : ' URI: ✗'}
+          </Text>
         </View>
       )}
 
@@ -201,10 +267,41 @@ const styles = StyleSheet.create({
   deleteButton: {
     padding: 5,
   },
+  imageContainer: {
+    position: 'relative',
+  },
   postImage: {
     width: width,
     height: 300,
-    resizeMode: 'cover',
+  },
+  imageLoader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    height: 300,
+    zIndex: 1,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#666',
+  },
+  imageError: {
+    width: width,
+    height: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  errorText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#999',
   },
   description: {
     fontSize: 16,
@@ -222,6 +319,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginLeft: 5,
+  },
+  debugInfo: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    marginHorizontal: 15,
+    borderRadius: 5,
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#666',
   },
   footer: {
     flexDirection: 'row',
