@@ -1,16 +1,28 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// navigation/AuthNavigator.js
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// Importar do caminho correto agora
+import { auth } from '../services/firebaseConfig';
+
+// Screens
 import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ForgotPassword from '../screens/ForgotPasswordScreen';
+// Adicione outras telas de autenticação se necessário
 
-export default function AuthNavigator () {
-    const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
-        </Stack.Navigator>
-    )
-}
+const AuthNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false, // ou true se quiser mostrar header
+      }}
+    >
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+    </Stack.Navigator>
+  );
+};
+
+export default AuthNavigator;

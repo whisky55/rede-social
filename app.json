@@ -13,17 +13,53 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Este app precisa acessar a câmera para tirar fotos dos seus treinos",
+        "NSPhotoLibraryUsageDescription": "Este app precisa acessar suas fotos para salvar e compartilhar imagens dos treinos",
+        "NSLocationWhenInUseUsageDescription": "Este app usa sua localização para marcar onde você treinou"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_MEDIA_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir que $(PRODUCT_NAME) acesse sua câmera para tirar fotos dos treinos",
+          "microphonePermission": "Permitir que $(PRODUCT_NAME) acesse seu microfone para gravar vídeos (opcional)"
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Permitir que $(PRODUCT_NAME) acesse suas fotos para salvar e compartilhar imagens",
+          "savePhotosPermission": "Permitir que $(PRODUCT_NAME) salve fotos na sua galeria",
+          "isAccessLimited": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir que $(PRODUCT_NAME) use sua localização para marcar onde você treinou"
+        }
+      ]
+    ]
   }
 }

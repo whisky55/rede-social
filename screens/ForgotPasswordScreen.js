@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 
 // Importações corretas
-import { auth } from '../firebase';
+import { auth } from '../services/firebaseConfig';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 export default function ForgotPasswordScreen() {

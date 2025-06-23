@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import {
     auth,
     signInWithEmailAndPassword
-} from '../firebase';
+} from  '../services/firebaseConfig';
 import { PrimaryButton, SecondaryButton } from '../components/Button.js';
 import { EmailInput, PasswordInput } from '../components/CustomInput.js';
 

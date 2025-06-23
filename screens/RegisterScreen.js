@@ -10,8 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import {
     auth,
     createUserWithEmailAndPassword
-} from '../firebase';
-import { db } from '../firebase';
+} from  '../services/firebaseConfig';
+import { db } from '../services/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { PrimaryButton, SecondaryButton } from '../components/Button.js';
 import { EmailInput, PasswordInput } from '../components/CustomInput.js';
